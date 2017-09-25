@@ -1,8 +1,5 @@
-
-# m.py
 from repository import *
 from authentication import *
-
 
 if __name__ == "__main__":
 
