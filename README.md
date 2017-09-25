@@ -4,12 +4,12 @@
 
 You can connect with mongo database via a GUI client like for example; RoboMongo (many others are out there). In your client, use the following credidentials:
 
-> serveraddress:    109.238.10.185
-> port:                     27000
-> use_authentication: yes
-> database: webretrieval
-> username: webretrieval
-> password: tue
+> serveraddress:    109.238.10.185 ⋅⋅
+> port:                     27000 ⋅⋅
+> use_authentication: yes ⋅⋅
+> database: webretrieval ⋅⋅
+> username: webretrieval ⋅⋅
+> password: tue ⋅⋅
 
 
 We need a so called ‘driver’ to enable our python scripts to communicate with the database. You can install it like so:
