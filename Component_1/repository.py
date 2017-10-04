@@ -33,8 +33,14 @@ def update_amount(db, keyword, documentId, amount):
 '''
 def add_reference_for_title(db, title, documentIdList, titleId):
     db.title_references.update(
-        { 'title': title,  },
-        { 'titleId': titleId,  },
+        { 'title': title, 'documentId': titleId },
         { '$push': {'references_found': {'documents': str(documentIdList)}}}, upsert=True, multi=True
     )
 
+def get_references(db):
+    cursor = db.title_references.find({})
+    return cursor
+
+def get_title_for_document_id(db, documentId):
+    cursor = db.title_references.find_one({'documentId': documentId })
+    return cursor
