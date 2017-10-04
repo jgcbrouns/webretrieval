@@ -11,16 +11,16 @@ Description:    Applies PageRanking algorithm to created referencegraph
 
 Result:
 
-1. Infinite latent feature models and the Indian buffet process - 0.00955888260995
-2. Efficient sparse coding algorithms - 0.00919983118033
-3. Locality-sensitive binary codes from shift-invariant kernels - 0.00262792779807
-4. Analysis of a greedy active learning strategy - 0.00346660254589
-5. Structured sparsity-inducing norms through submodular functions - 0.00383128278449
-6. Sparse deep belief net model for visual area V2 - 0.00413794006623
-7. Gaussian Processes for Regression - 0.00604755435219
-8. Partially labeled classification with Markov random walks - 0.0032591116382
-9. A general agnostic active learning algorithm - 0.00468939172506
-10. Coarse sample complexity bounds for active learning - 0.00465899146596
+1. 2882 - Infinite latent feature models and the Indian buffet process - 0.00955888260995
+2. 2979 - Efficient sparse coding algorithms - 0.00919983118033
+3. 3749 - Locality-sensitive binary codes from shift-invariant kernels - 0.00262792779807
+4. 2636 - Analysis of a greedy active learning strategy - 0.00346660254589
+5. 3933 - Structured sparsity-inducing norms through submodular functions - 0.00383128278449
+6. 3313 - Sparse deep belief net model for visual area V2 - 0.00413794006623
+7. 1048 - Gaussian Processes for Regression - 0.00604755435219
+8. 1967 - Partially labeled classification with Markov random walks - 0.0032591116382
+9. 3325 - A general agnostic active learning algorithm - 0.00468939172506
+10. 2943 - Coarse sample complexity bounds for active learning - 0.00465899146596
 
 '''
 
@@ -56,6 +56,6 @@ if __name__ == "__main__":
     for documentId in top:
         counter = counter + 1
         document = get_title_for_document_id(db,documentId)
-        print (str(counter) + '. ' + document['title']) + ' - ' + str(top[documentId])
+        print (str(counter) + '. ' + str(documentId) + ' - ' + document['title']) + ' - ' + str(top[documentId])
     
 
