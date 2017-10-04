@@ -27,3 +27,14 @@ def update_amount(db, keyword, documentId, amount):
     add_amount(db, keyword, documentId, amount)
 
 
+'''
+    adds an amount to the database for a specific keyword and documentId
+    @param db, keyword, documentId, amount
+'''
+def add_reference_for_title(db, title, documentIdList, titleId):
+    db.title_references.update(
+        { 'title': title,  },
+        { 'titleId': titleId,  },
+        { '$push': {'references_found': {'documents': str(documentIdList)}}}, upsert=True, multi=True
+    )
+
