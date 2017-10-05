@@ -51,7 +51,6 @@ if __name__ == "__main__":
 
     # Variable for counting how many titles are processed (fed into progressbar)
     titleCounter = 0
-    referencesFoundCounter = 0
 
     for title in list(reversed(titles)):
         titleId = title[1]
@@ -60,33 +59,26 @@ if __name__ == "__main__":
         # Check if title has more than 3 words, if so; look for references
         # Note: we do not allow titles with less than 3 words, since it often is not unique enough:
         #       (it might not be an actual reference, but just random found text)
-        if amountOfWordsInTitle > 2:
+        if amountOfWordsInTitle > 3:
 
             # Setting some variables
-            goodTitle = title[0]
+            goodTitle = title[0].lower()
             referencesList = []
 
             # Foreach document, search if title occurs as a reference
             for document in documents:
 
-                # Filter on reference, when "Reference" occurs in text, continue with 
-                # only the text from the point where "Reference" occurs
-                filter = "References"
-                if filter in str(document[6]):
-                    referencesText = ((str(document[6])).split(filter,1)[1])
-                    referencesText = referencesText.lower()
+                referencesText = str(document[6].lower())
+                documentId = document[0]
 
-                    documentId = document[0]
-
-                    if goodTitle in str(referencesText):
-                        
-                        # If the found document is different from the document which title we are searching for
-                        if documentId != titleId:
-                            referencesList.append(documentId);
-                            referencesFoundCounter = referencesFoundCounter + 1
-                            #print "true"
-                        # elif documentId == titleId:
-                        #     print "SELFREFERENCE"
+                if goodTitle in str(referencesText):
+                    
+                    # If the found document is different from the document which title we are searching for
+                    if documentId != titleId:
+                        referencesList.append(documentId);
+                        #print "true"
+                    # elif documentId == titleId:
+                    #     print "SELFREFERENCE"
 
             # If we found references, add to database
             if referencesList:
@@ -95,7 +87,6 @@ if __name__ == "__main__":
         # Update statusbar
         titleCounter = titleCounter + 1
         bar.update(titleCounter)
-
 
 
 
