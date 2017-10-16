@@ -1,3 +1,7 @@
 *.pyc
 .DS_Store
 data/
+Component_1/data/*
+app/db.sqlite3
+app/database.sqlite
+app/search/database.sqlite
