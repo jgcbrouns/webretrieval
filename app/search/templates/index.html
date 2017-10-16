@@ -19,15 +19,22 @@
       <meta name="viewport" content="width=device-width">
       <link rel="shortcut icon" href="favicon.ico">
       {% load staticfiles %}
+
+      <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/style.css' %}">
+      <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/reset.css' %}">
+
       <link rel="stylesheet" href="{% static 'search/css/styles.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/fancyInput.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/bootstrap.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/spinner.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/main.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/fancyTable.css' %}">
+
       <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
       <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script src="{% static 'search/stretchy-navigation/js/main.js' %}"></script>
+      <script src="{% static 'search/stretchy-navigation/js/modernizr.js' %}"></script>
    </head>
    <body>
       <!-- 	<form method="get" action="/"> -->
@@ -41,6 +48,19 @@
       </div>
       <!-- 	</form> -->
       
+	<nav class="cd-stretchy-nav">
+		<a class="cd-nav-trigger" href="#0">
+			<span aria-hidden="true"></span>
+		</a>
+		<ul>
+			<li><a href="/" class="active"><span>Search</span></a></li>
+			<li><a href="/clusters"><span>Clusters</span></a></li>
+			<li><a href="/Topics"><span>Topics</span></a></li>
+		</ul>
+	 
+		<span aria-hidden="true" class="stretchy-nav-bg"></span>
+	</nav>
+
       <div class="tableContainer">
          <div class="loader">
             <h1>LOADING</h1>
