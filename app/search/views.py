@@ -8,6 +8,10 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from django.core import serializers
 
+from repository import *
+from authentication import *
+
+
 # Create your views here.
 class HomePageView(TemplateView):
 	def get(self, request, **kwargs):
@@ -22,7 +26,7 @@ def getContent(request, **kwargs):
 		# post = Post(text=post_text, author=request.user)
 		# post.save()
 		# Do query
-
+		db = get_db()
 		if query:
 			try:
 				query = int(query)
@@ -35,16 +39,21 @@ def getContent(request, **kwargs):
 			
 			if query:
 				try:
-					papers = Papers.objects.filter(year=query).only("year", "title")
+					papers = Papers.objects.filter(year=query).only("year", "title", "id")
 
 					line_items=[]
+    
 					for paper in papers:
 					    year = paper.year
 					    title = paper.title
+					    id = paper.id
+					    cursor = get_pagerank(db, id)
+					    pagerank = document['PageRank']
 
 					    jsonInstance = {
 					                'year': year,
-					                'title': title
+					                'title': title,
+					                'pagerank': pagerank
 					            	}
 					    line_items.append(jsonInstance)
 

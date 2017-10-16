@@ -149,7 +149,7 @@ class PaperAuthors(models.Model):
 
 
 class Papers(models.Model):
-    #id_noprimarykey = models.IntegerField(blank=True, null=True)
+    id = models.IntegerField(blank=True, null=False, primary_key=True)
     year = models.IntegerField(blank=True, null=True)
     title = models.TextField(blank=True, null=True)
     event_type = models.TextField(blank=True, null=True)
