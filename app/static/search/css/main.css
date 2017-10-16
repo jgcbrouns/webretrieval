@@ -1,0 +1,24 @@
+body
+{
+background: radial-gradient(#205983, #0A2742);
+}
+body
+{
+background:#333;
+background: -webkit-gradient(radial, center center, 120, center center, 900, from(#33495E), to(#2E2329));
+background:-moz-radial-gradient(circle, #33495E, #2E2329);
+}
+.inputContainer
+{
+margin-top:	30px;
+}
+.tableContainer
+{
+width: 90%;
+margin-left: 20%;
+margin-left: 5%;
+}
+
+.loader {
+    margin-top: 20%;
+}
