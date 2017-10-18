@@ -46,7 +46,6 @@ def get_references(db):
     cursor = db.title_references2.find({})
     return cursor
 
-
 '''
     Returns title for a specific documentId
     @param db, documentId

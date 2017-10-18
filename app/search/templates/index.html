@@ -75,8 +75,9 @@
                <table cellpadding="0" cellspacing="0" border="0">
                   <thead>
                      <tr>
-                        <th width="90%">Papers</th>
+                        <th width="65%">Papers</th>
                         <th>Year</th>
+                        <th>PageRank</th>
                      </tr>
                   </thead>
                </table>
@@ -197,16 +198,27 @@
 			$.each(JSON.parse(data), function(idx, obj) {
 				title = obj.title;
 				year = obj.year;
-				addRowToTable(title, year);
+        id = obj.year;
+        pagerank = obj.pagerank;
+				addRowToTable(title, year, pagerank, id);
 			});
 		}
 
-		function addRowToTable(title, year)
+		function addRowToTable(title, year, pagerank, id)
 		{
+
+      if(typeof pagerank == 'undefined')
+      {
+        pagerank = '/';
+      }
+
 			$('#resultTable > tbody:last-child').append(
 			            '<tr>'// need to change closing tag to an opening `<tr>` tag.
-				            +'<td width="90%">'+ title +'</td>'
+				            +'<td width="65%">' 
+                      + '<a href="' + 'paper?id=' + id + '">'+ title + '</a>' 
+                    + '</td>'
 				            +'<td>'+ year +'</td>'
+                    +'<td>'+ pagerank +'</td>'
 			            +'</tr>');
 		}
          

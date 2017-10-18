@@ -72,3 +72,7 @@ def add_pagerank(db, documentId, pageRank):
 def get_pagerank(db, documentId):
     cursor = db.pagerank.find_one({'documentId': documentId })
     return cursor
+
+def get_topics_for_document(db, documentId):
+    cursor = db.topic_distribution.find_one({'documentId': documentId })
+    return cursor
