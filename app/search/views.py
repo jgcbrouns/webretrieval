@@ -10,7 +10,7 @@ from django.core import serializers
 import sys
 from repository import *
 from authentication import *
-
+from vsr import *
 
 # Create your views here.
 class HomePageView(TemplateView):
@@ -26,7 +26,6 @@ def page_view(request):
 
 		topicsList = []
 		metadataList = []
-
 
 		db = get_db()
 		cursor = get_topics_for_document(db, documentId)
@@ -48,6 +47,10 @@ def page_view(request):
 
 		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper})
 
+def get_papers_from_list(db, ids):
+	cursor = db.pages.find({'documentId': {'$in': ids}});
+	return cursor
+
 
 def getContent(request, **kwargs):
     if request.method == 'POST':
@@ -58,28 +61,38 @@ def getContent(request, **kwargs):
 		# post.save()
 		# Do query
 		db = get_db()
+		print >>sys.stderr, 'hi:'
+
 		if query:
 			try:
-				query = int(query)
+				query = str(query)
+				print >>sys.stderr, 'asdf:'
 			except ValueError:
 				query = None
 				papers = None
-
 
 				#return empty data
 				response_data['papers'] = json.dumps([])
 			
 			if query:
 				try:
-					papers = Papers.objects.filter(year=query).only("year", "title", "id")
+					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
+
+					ids = final(query, 100)
+					papers = get_papers_from_list(db, ids)
+
+					# for paper in papers:
+						# print >>sys.stderr, paper['title']
 
 					items=[]
 					items_with_pagerank=[]
+
     
 					for paper in papers:
-						year = paper.year
-						title = paper.title
-						id = paper.id
+						year = paper['year']
+						title = paper['title']
+						id = paper['documentId']
+						print >>sys.stderr, id
 						try:
 							cursor = get_pagerank(db, id)
 							if cursor:
@@ -115,3 +128,76 @@ def getContent(request, **kwargs):
 			json.dumps({"nothing to see": "this isn't happening"}),
 			content_type="application/json"
         )
+
+# def getContent(request, **kwargs):
+#     if request.method == 'POST':
+# 		query = request.POST.get('query')
+# 		response_data = {}
+
+# 		# post = Post(text=post_text, author=request.user)
+# 		# post.save()
+# 		# Do query
+# 		db = get_db()
+# 		if query:
+# 			try:
+# 				query = int(query)
+# 			except ValueError:
+# 				query = None
+# 				papers = None
+
+# 				#return empty data
+# 				response_data['papers'] = json.dumps([])
+			
+# 			if query:
+# 				try:
+# 					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
+
+# 					ids = final(query, 10)
+# 					papers = get_papers_from_list(db, ids)
+
+# 					# for id in ids:
+# 					# 	paper = get_paper(db, id)
+
+# 					items=[]
+# 					items_with_pagerank=[]
+
+    
+# 					for paper in papers:
+# 						year = paper.year
+# 						title = paper.title
+# 						id = paper.id
+# 						try:
+# 							cursor = get_pagerank(db, id)
+# 							if cursor:
+# 								pagerank = cursor['PageRank']
+# 								jsonInstance = {'year': year,'title': title,'pagerank': pagerank, 'id': id}
+# 								items_with_pagerank.append(jsonInstance)
+# 							else:
+# 								jsonInstance = {'year': year,'title': title, 'id': id}
+# 								items.append(jsonInstance)
+# 						except ObjectDoesNotExist:
+# 							null
+
+# 					#sort on pagerank
+# 					#items.sort(key=lambda item: (item['points'], item['time']))
+# 					items_with_pagerank.sort(key=lambda item: (item['pagerank']),reverse=True)
+
+# 					final_list = items_with_pagerank + items
+# 					jsonOutput = json.dumps(final_list)
+
+# 					response_data['papers'] = jsonOutput
+# 				except ObjectDoesNotExist:
+# 					null
+
+# 		response_data['result'] = 'data retrieval successful!'
+# 		response_data['query'] = query
+
+# 		return HttpResponse(
+# 			json.dumps(response_data),
+# 			content_type="application/json"
+#         )
+#     else:
+#         return HttpResponse(
+# 			json.dumps({"nothing to see": "this isn't happening"}),
+# 			content_type="application/json"
+#         )
