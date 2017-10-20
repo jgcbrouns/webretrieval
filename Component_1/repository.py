@@ -63,3 +63,25 @@ def add_pagerank(db, documentId, pageRank):
     db.pagerank.insert(
         { 'documentId': documentId, 'PageRank': pageRank,  }
     )
+
+def add_paper(db, id, year, title, event_type, pdf_name, abstract, paper_text):
+    db.pages.insert(
+        { 'documentId': id, 'year': year, 'title': title, 'event_type': event_type, 'pdf_name': pdf_name, 'abstract': abstract, 'paper_text': paper_text }
+    )
+
+def get_paper(db, documentId):
+    cursor = db.pages.find_one({'documentId': documentId })
+    return cursor
+
+def add_paper_author(db, documentId, paper_id, author_id):
+    db.paper_authors.insert({ 'documentId': documentId, 'paper_id': paper_id, 'author_id': author_id }
+    )
+
+def add_author(db, documentId, name):
+    db.authors.insert({ 'author_id': documentId, 'name': name }
+    )
+
+def get_authors_for_paper(db, documentId):
+    cursor = db.authors.find_one({'id': documentId })
+    return cursor
+

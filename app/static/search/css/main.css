@@ -67,3 +67,19 @@ a{
 {
 	margin: 10%;
 }
+
+.TopicsPageContainer
+{
+	margin: 10%;
+	margin-top: 5%;
+}
+
+text {
+    font-size: 11px;
+    color: #2e5778;
+}
+
+label {
+	color: #2e5778;
+}
+

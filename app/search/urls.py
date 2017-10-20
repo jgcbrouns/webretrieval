@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^getContent/$', views.getContent),
     # url(r'^paper/(?P<id>\w{0,50})/$', views.page_view),
     url(r'^paper/$', views.page_view),
+    url(r'^Topics/$', views.topics_view),
 ]

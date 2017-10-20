@@ -17,11 +17,16 @@ class HomePageView(TemplateView):
 	def get(self, request, **kwargs):
 		return render(request, 'index.html')
 
+def topics_view(request):
+	return render(request, 'vis.html')
+
 def page_view(request):
 	if request.method == 'GET':
 		documentId = request.GET.get('id')
 
 		topicsList = []
+		metadataList = []
+
 
 		db = get_db()
 		cursor = get_topics_for_document(db, documentId)
@@ -34,9 +39,15 @@ def page_view(request):
 
 				topicsList.append(topicDict)
 
+		# print >>sys.stderr, documentId
+		paper = get_paper(db, int(documentId))
+		get_authors_for_paper(db, int(documentId))
+		# authors = get_authors_for_paper(db, int(documentId))
+
 		topicsList.sort(key=lambda item: (item['value']),reverse=True)
 
-		return render(request, 'page.html', {'topics': topicsList})
+		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper})
+
 
 def getContent(request, **kwargs):
     if request.method == 'POST':
