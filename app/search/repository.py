@@ -46,6 +46,7 @@ def get_references(db):
     cursor = db.title_references2.find({})
     return cursor
 
+
 '''
     Returns title for a specific documentId
     @param db, documentId
@@ -63,3 +64,15 @@ def add_pagerank(db, documentId, pageRank):
     db.pagerank.insert(
         { 'documentId': documentId, 'PageRank': pageRank,  }
     )
+
+'''
+    Returns title for a specific documentId
+    @param db, documentId
+'''
+def get_pagerank(db, documentId):
+    cursor = db.pagerank.find_one({'documentId': documentId })
+    return cursor
+
+def get_topics_for_document(db, documentId):
+    cursor = db.topic_distribution.find_one({'documentId': documentId })
+    return cursor
