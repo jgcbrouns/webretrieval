@@ -3,6 +3,15 @@ from nltk.corpus import stopwords
 import pandas as pd
 from authentication import *
 
+db = get_db()
+
+### if "True", recomputes the tf and df and writes to MongoDB - change when document data has been changed
+reindex = False
+
+### Variables ###
+DID = 'id'
+TOP_N = 10
+LIMIT_WORD_TF = 0 # How many times word has to appear in Tf to store it in the database
 
 def prepare(text):
     stop = set(stopwords.words('english'))
@@ -59,94 +68,107 @@ def cosine_similarity(tfIdf, qTfIdf, DF, COUNT):
     cosine_similarity = dot_product / ( math.sqrt(query_sc) * math.sqrt(document_sc) )
     return cosine_similarity
 
+def test_cosine_similarity(tfIdf, qTfIdf, DF, COUNT):
+    dot_product = 0
+    query_sc = 0;
+    document_sc = 0;
+
+    for qToken in qTfIdf:
+        if qToken in tfIdf:
+            dot_product += qTfIdf[qToken] * tfIdf[qToken]
+            document_sc += math.pow(tfIdf[qToken], 2)
+        else:
+            dot_product += qTfIdf[qToken] * 0.0001 * idf(DF, qToken, COUNT)
+            document_sc += math.pow(0.0001 * idf(DF, qToken, COUNT), 2)
+        query_sc += math.pow(qTfIdf[qToken], 2)
+
+    if not query_sc or not document_sc:
+        return 0
+
+    print qTfIdf
+    print
+
+    cosine_similarity = dot_product / ( math.sqrt(query_sc) * math.sqrt(document_sc) )
+    return cosine_similarity
+
 def topN(dic, n):
     top = sorted(dic, key=dic.get, reverse=True)
     return top[:n]
 
-### if "True", recomputes the tf and df and writes to MongoDB - change when document data has been changed
-reindex = False
 
-### Variables ###
-LIMIT_WORD_TF = 0 # How many times word has to appear in Tf to store it in the database
-
-class DBHelper:
+class DBInt:
 
     LIMIT = 2000
-    db = get_db()
+    ANAL_FIELD = "title" # Field name in the paper document
+    anal_field = "title" # Field name in the database
+    collection = "index_" + anal_field
+    collection_df = collection + "_df"
 
-    def __init__(self, anal_field, db_field):
-        self.anal_field = anal_field
-        self.db_field = db_field
-        self.collection = "index_" + db_field
-        self.collection_df = self.collection + "_df"
+    def __init__(self):
+        self
 
     def add_bulk_tf(self, documentId, tokens):
         tf = {}
         for key in tokens:
             tf[key] = tokens[key] 
-        self.db[self.collection].insert({'documentId' : documentId, 'data' : tf})
+        db[collection].insert({'documentId' : documentId, 'data' : tf})
 
     def add_bulk_df(self, df):
         list_df = []
         for key in df:
             list_df.append({"keyword": key, "count": df[key]})
-        self.db[self.collection_df].insert_many(list_df)
+        db[collection_df].insert_many(list_df)
 
     def get_tf(self, documentId):
-        return self.db[self.collection].find_one({'documentId': documentId});
+        return db[collection].find_one({'documentId': documentId});
 
     def get_all_tf(self):
         tf = {}
-        for document in self.db[self.collection].find():
+        for document in db[collection].find():
             tf[document['documentId']] = document['data']
         return tf
 
     def get_df(self):
         df = {}
-        for item in self.db[self.collection_df].find():
+        for item in db[collection_df].find():
             df[item['keyword']] = item['count']
         return df
 
     def get_document(self, documentId):
-        return self.db.pages.find_one({'documentId': documentId});
+        return db.papers.find_one({'id': documentId});
 
-    def get_documents(self):
-        return list(self.db.pages.find({}, {"documentId" : 1, self.anal_field : 1, "title" : 1, "_id" : 0}).limit(self.LIMIT));
+    def get_documents(self, n):
+        return list(db.papers.find({}, {"id" : 1, "title" : 1, "_id" : 0}).limit(n));
 
-    def clean_db(self):
-        self.db[self.collection].remove({})
-        self.db[self.collection_df].remove({})
-
-    def printJson(obj):
+    def printJson(self, obj):
         print json.dumps(obj, indent=4, sort_keys=True)
 
-def final(query, top_n):
 
-    ANAL_FIELD = "title"
 
-    DBH = DBHelper(ANAL_FIELD, "title")
 
     if reindex:
         print "Recompute the index"
-        DBH.clean_db()
+        db[collection].remove({})
+        db[collection_df].remove({})
 
-        DOCUMENTS = DBH.get_documents()
+        DOCUMENTS = get_documents(LIMIT)
 
         df = {}
         for document in DOCUMENTS:
             tokens = prepare(document[ANAL_FIELD])
             tokens = calculate(tokens, LIMIT_WORD_TF)
-            DBH.add_bulk_tf(document['documentId'], tokens)
+            print tokens
+            add_bulk_tf(document[DID], tokens)
             for token in tokens:
                 if token in df:
                     df[token] += 1
                 else:
                     df[token] = 1
-        DBH.add_bulk_df(df)
+        add_bulk_df(df)
         
 
-    tf = DBH.get_all_tf()
-    DF = DBH.get_df()
+    tf = get_all_tf()
+    DF = get_df()
     COUNT = len(tf)
 
     for key in tf.keys():
@@ -159,6 +181,7 @@ def final(query, top_n):
         for token in tf[document]:
             tfIdf[document][token] = tf[document][token] * idf(DF, token, COUNT)
 
+    query = "I love neural network network"
     qTokens = prepare(query)
     qTf = calculate(qTokens, 0)
     qDf = {}
@@ -179,12 +202,18 @@ def final(query, top_n):
     for document in tf:
         cos_sim[document] = cosine_similarity(tfIdf[document], qTfIdf, DF, COUNT)
 
-    top_documents  = topN(cos_sim, top_n)
+    top_documents  = topN(cos_sim, TOP_N)
 
-    return top_documents
+    print
+    print query
+    print
 
-    # for d_id in top_documents:
-    #     print DBH.get_document(d_id)['title'] + ' = ' + str(DBH.get_document(d_id)['documentId'])
+    for d_id in top_documents:
+        # print cos_sim[d_id]
+        # print tfIdf[d_id]
+        print get_document(d_id)['title'] + ' = ' + str(get_document(d_id)['id'])
 
-if __name__ == "__main__":
-    print final("I love neural network network", 5)
+    for document in top_documents:
+        cos_sim[document] = test_cosine_similarity(tfIdf[document], qTfIdf, DF, COUNT)
+
+    printJson(qTfIdf)
