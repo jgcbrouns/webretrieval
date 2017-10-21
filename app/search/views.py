@@ -11,6 +11,7 @@ import sys
 from repository import *
 from authentication import *
 from vsr import *
+import ast
 
 # Create your views here.
 class HomePageView(TemplateView):
@@ -20,6 +21,34 @@ class HomePageView(TemplateView):
 def topics_view(request):
 	return render(request, 'vis.html')
 
+
+def author_view(request):
+	if request.method == 'GET':
+		authorId = request.GET.get('id')
+		db = get_db()
+		topicInfo = get_author_topic_information(db, int(authorId))
+		coauthors = topicInfo['workingtimes_with_coauthor']
+		coauthors = coauthors[1:-1]
+		coauthorsDict = ast.literal_eval(coauthors)
+
+		coauthorsListWithNames = []
+		for coAuthor in coauthorsDict:
+			coAuthorId = int(coAuthor)
+			coAuthorCOOPTimes = int(coauthorsDict[coAuthor])
+
+			coauthorQuery = get_author(db, int(coAuthorId))
+			coauthorName = coauthorQuery['name']
+
+			coauthorDict = {'name': coauthorName, 'times': coAuthorCOOPTimes}
+
+			coauthorsListWithNames.append(coauthorDict)
+
+		authorQuery = get_author(db, int(authorId))
+	else:
+		authorId = null
+	
+	return render(request, 'author.html', {'author': authorQuery, 'topicInfo': topicInfo, 'id': authorId, 'coauthors': coauthorsListWithNames})
+
 def page_view(request):
 	if request.method == 'GET':
 		documentId = request.GET.get('id')
@@ -28,6 +57,11 @@ def page_view(request):
 		metadataList = []
 
 		db = get_db()
+
+		keywords = get_keywords_for_paper(db, documentId)
+		keywords = keywords['keywords']
+
+
 		cursor = get_topics_for_document(db, documentId)
 		for topic in cursor:
 			if topic != 'documentId' and topic != '_id' and topic != 'main topic' and topic != 'second topic' and topic != 'third topic':
@@ -38,14 +72,13 @@ def page_view(request):
 
 				topicsList.append(topicDict)
 
-		# print >>sys.stderr, documentId
 		paper = get_paper(db, int(documentId))
-		get_authors_for_paper(db, int(documentId))
-		# authors = get_authors_for_paper(db, int(documentId))
+		# get_authors_for_paper(db, int(documentId))
+		authors = get_authors_for_paper(db, int(documentId))
 
 		topicsList.sort(key=lambda item: (item['value']),reverse=True)
 
-		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper})
+		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords},)
 
 def get_papers_from_list(db, ids):
 	cursor = db.pages.find({'documentId': {'$in': ids}});
@@ -81,18 +114,14 @@ def getContent(request, **kwargs):
 					ids = final(query, 100)
 					papers = get_papers_from_list(db, ids)
 
-					# for paper in papers:
-						# print >>sys.stderr, paper['title']
-
 					items=[]
 					items_with_pagerank=[]
 
-    
-					for paper in papers:
+					for paper in papers:						
 						year = paper['year']
 						title = paper['title']
 						id = paper['documentId']
-						print >>sys.stderr, id
+						# authors = get_authors_for_paper(db, int(id))
 						try:
 							cursor = get_pagerank(db, id)
 							if cursor:

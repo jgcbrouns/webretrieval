@@ -95,8 +95,8 @@
       <script src='{% static 'search/css/fancyInput.js' %}'></script>
       <script>
 
-        var xhr = null;
-        
+         var currentXhr;
+
          $('section :input').val('').fancyInput()[0].focus();
          
          //For the table
@@ -161,21 +161,12 @@
 		// AJAX for posting
 		function create_post() {
 
-              /* if there is a previous ajax request, then we abort it and then set xhr to null */
-        if( xhr != null ) {
-                xhr.abort();
-                xhr = null;
-        }
+      currentXhr && currentXhr.readyState != 4 && currentXhr.abort(); // clear previous request
 
       console.log('making request')
 		    xhr = $.ajax({
 		        url : "/getContent/", // the endpoint
 		        type : "POST", // http method
-            // beforeSend : function()    {           
-            //     if(currentRequest != null) {
-            //         currentRequest.abort();
-            //     }
-            // },
 		        data : { query : $('#id_q').val() }, // data sent with the post request
 
 		        // handle a successful response

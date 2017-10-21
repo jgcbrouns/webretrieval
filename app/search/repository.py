@@ -1,3 +1,4 @@
+import sys
 '''
     adds an amount to the database for a specific keyword and documentId
     @param db, keyword, documentId, amount
@@ -91,16 +92,30 @@ def add_author(db, documentId, name):
         { 'author_id': documentId, 'name': name }
     )
 
+
+def get_author(db, author_id):
+    author = db.authors.find_one({'author_id': author_id })
+    return author   
+
+
+def get_keywords_for_paper(db, paper_id):
+    author = db.Paperid_keywords_V1.find_one({'paper_id': paper_id })
+    return author  
+
+def get_author_topic_information(db, author_id):
+    # author_id gets converted to string because people dont know difference between string and int
+    cursor = db.author_id_topic.find_one({'author_id': str(author_id) })
+    return cursor   
+
 def get_authors_for_paper(db, documentId):
-    cursor = db.paper_authors.find({'documentId': documentId })
-    authorsNameList = []
+    cursor = db.paper_authors.find({'paper_id': documentId })
+    authorsList = []
     for author in cursor:
-        print >>sys.stderr, author
-
-    # cursor = db.paper_authors.find_one({'documentId': documentId })
-
-def get_authors_for_paper(db, documentId):
-    cursor = db.authors.find_one({'id': documentId })
-    return cursor
-
-    
+        author = get_author(db,author['author_id'])
+        authorName = author['name']
+        authorId = author['author_id']
+        jsonInstance = {'name': authorName,'id': authorId}
+        authorsList.append(jsonInstance)
+    return authorsList
+        
+   
