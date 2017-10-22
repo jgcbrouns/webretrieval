@@ -1,6 +1,5 @@
-import sqlite3, re, operator, math, json, sys
+import re, operator, math, json, sys
 from nltk.corpus import stopwords
-import pandas as pd
 from authentication import *
 
 
@@ -63,12 +62,6 @@ def topN(dic, n):
     top = sorted(dic, key=dic.get, reverse=True)
     return top[:n]
 
-### if "True", recomputes the tf and df and writes to MongoDB - change when document data has been changed
-reindex = False
-
-### Variables ###
-LIMIT_WORD_TF = 0 # How many times word has to appear in Tf to store it in the database
-
 class DBHelper:
 
     LIMIT = 2000
@@ -120,11 +113,16 @@ class DBHelper:
     def printJson(obj):
         print json.dumps(obj, indent=4, sort_keys=True)
 
-def final(query, top_n):
+def final(query, based_on, top_n, reindex):
 
-    ANAL_FIELD = "title"
-
-    DBH = DBHelper(ANAL_FIELD, "title")
+    if based_on == "title":
+        ANAL_FIELD = "title"
+        DBH = DBHelper(ANAL_FIELD, "title")
+        LIMIT_WORD_TF = 0
+    else:
+        ANAL_FIELD = "paper_text"
+        DBH = DBHelper(ANAL_FIELD, "text")
+        LIMIT_WORD_TF = 1
 
     if reindex:
         print "Recompute the index"
@@ -181,10 +179,11 @@ def final(query, top_n):
 
     top_documents  = topN(cos_sim, top_n)
 
+    for d_id in top_documents:
+        print DBH.get_document(d_id)['title'] + ' = ' + str(DBH.get_document(d_id)['documentId']) + ' = ' + str(cos_sim[d_id])
+
     return top_documents
 
-    # for d_id in top_documents:
-    #     print DBH.get_document(d_id)['title'] + ' = ' + str(DBH.get_document(d_id)['documentId'])
-
 if __name__ == "__main__":
-    print final("I love neural network network", 5)
+    print final("neural network", "title", 5, False)
+    

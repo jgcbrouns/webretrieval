@@ -84,22 +84,43 @@ def get_papers_from_list(db, ids):
 	cursor = db.pages.find({'documentId': {'$in': ids}});
 	return cursor
 
+def clusters_view(request):
+	return render(request, 'clusters.html')
+
+def cluster1_view(request):
+	return render(request, 'cluster1.html')
+
+def cluster2_view(request):
+	return render(request, 'cluster2.html')
+
+def cluster3_view(request):
+	return render(request, 'cluster3.html')
+
+def cluster4_view(request):
+	return render(request, 'cluster4.html')
+
+def cluster5_view(request):
+	return render(request, 'cluster5.html')
 
 def getContent(request, **kwargs):
     if request.method == 'POST':
 		query = request.POST.get('query')
+		field = request.POST.get('field')
+		reindexString = request.POST.get('reindex')
+		if reindexString == 'true':
+			reindex = True
+		else:
+			reindex = False
+
 		response_data = {}
 
-		# post = Post(text=post_text, author=request.user)
-		# post.save()
-		# Do query
 		db = get_db()
-		print >>sys.stderr, 'hi:'
 
 		if query:
 			try:
 				query = str(query)
-				print >>sys.stderr, 'asdf:'
+				print >>sys.stderr, field
+				print >>sys.stderr, reindex
 			except ValueError:
 				query = None
 				papers = None
@@ -111,7 +132,7 @@ def getContent(request, **kwargs):
 				try:
 					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
 
-					ids = final(query, 100)
+					ids = final(query, field, 100, reindex)
 					papers = get_papers_from_list(db, ids)
 
 					items=[]
@@ -157,76 +178,3 @@ def getContent(request, **kwargs):
 			json.dumps({"nothing to see": "this isn't happening"}),
 			content_type="application/json"
         )
-
-# def getContent(request, **kwargs):
-#     if request.method == 'POST':
-# 		query = request.POST.get('query')
-# 		response_data = {}
-
-# 		# post = Post(text=post_text, author=request.user)
-# 		# post.save()
-# 		# Do query
-# 		db = get_db()
-# 		if query:
-# 			try:
-# 				query = int(query)
-# 			except ValueError:
-# 				query = None
-# 				papers = None
-
-# 				#return empty data
-# 				response_data['papers'] = json.dumps([])
-			
-# 			if query:
-# 				try:
-# 					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
-
-# 					ids = final(query, 10)
-# 					papers = get_papers_from_list(db, ids)
-
-# 					# for id in ids:
-# 					# 	paper = get_paper(db, id)
-
-# 					items=[]
-# 					items_with_pagerank=[]
-
-    
-# 					for paper in papers:
-# 						year = paper.year
-# 						title = paper.title
-# 						id = paper.id
-# 						try:
-# 							cursor = get_pagerank(db, id)
-# 							if cursor:
-# 								pagerank = cursor['PageRank']
-# 								jsonInstance = {'year': year,'title': title,'pagerank': pagerank, 'id': id}
-# 								items_with_pagerank.append(jsonInstance)
-# 							else:
-# 								jsonInstance = {'year': year,'title': title, 'id': id}
-# 								items.append(jsonInstance)
-# 						except ObjectDoesNotExist:
-# 							null
-
-# 					#sort on pagerank
-# 					#items.sort(key=lambda item: (item['points'], item['time']))
-# 					items_with_pagerank.sort(key=lambda item: (item['pagerank']),reverse=True)
-
-# 					final_list = items_with_pagerank + items
-# 					jsonOutput = json.dumps(final_list)
-
-# 					response_data['papers'] = jsonOutput
-# 				except ObjectDoesNotExist:
-# 					null
-
-# 		response_data['result'] = 'data retrieval successful!'
-# 		response_data['query'] = query
-
-# 		return HttpResponse(
-# 			json.dumps(response_data),
-# 			content_type="application/json"
-#         )
-#     else:
-#         return HttpResponse(
-# 			json.dumps({"nothing to see": "this isn't happening"}),
-# 			content_type="application/json"
-#         )
