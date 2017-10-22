@@ -16,6 +16,7 @@
       <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/style.css' %}">
       <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/reset.css' %}">
 
+      <link rel="stylesheet" href="{% static 'search/css/selectbox.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/styles.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/fancyInput.css' %}">
       <link rel="stylesheet" href="{% static 'search/css/bootstrap.css' %}">
@@ -28,14 +29,41 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
       <script src="{% static 'search/stretchy-navigation/js/main.js' %}"></script>
       <script src="{% static 'search/stretchy-navigation/js/modernizr.js' %}"></script>
+
    </head>
    <body>
+
+<div class="select animated zoomIn">
+    <!-- You can toggle select (disabled) -->
+    <input type="radio" name="option">
+    <i class="toggle icon icon-arrow-down"></i>
+    <i class="toggle icon icon-arrow-up"></i>
+    <span class="placeholder">Choose...</span>
+    <label class="option">
+        <input type="radio" name="option">
+        <span class="title animated fadeIn"><i class="icon icon-speedometer"></i>Speedometer</span>
+    </label>
+    <label class="option">
+        <input type="radio" name="option">
+        <span class="title animated fadeIn"><i class="icon icon-fire"></i>Fire</span>
+    </label>
+    <label class="option">
+        <input type="radio" name="option" disabled>
+        <span class="title animated fadeIn"><i class="icon icon-handbag"></i>Handbag</span>
+    </label>
+    <label class="option">
+        <input type="radio" name="option">
+        <span class="title animated fadeIn"><i class="icon icon-badge"></i>Badge</span>
+    </label>
+</div>
       <!-- 	<form method="get" action="/"> -->
       <div class="inputContainer">
          <section class='input'>
             <div>
                <input type='text' autocomplete="off" placeholder='' name="q" id="id_q" value="{{ query }}">
             </div>
+
+        
          </section>
          <!-- 	<input type="submit" id="submitButton" value="Search"/> -->
       </div>
@@ -232,6 +260,6 @@
 		}
          
       </script>
-
+<script src="{% static 'search/js/selectbox.js' %}"></script>
    </body>
 </html>
