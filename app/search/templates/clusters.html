@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+   <head>
+      <!--[if IE]>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <![endif]-->
+      <meta charset="utf-8">
+      <title>Web Retrieval Project Website</title>
+      <meta name="description" content="A Webapplication made for the Web Retrieval Course of the TU/e">
+      <meta property="og:image" content="https://www.3dprintingclub.nl/wp-content/uploads/2017/01/tu-eindhoven.png" />
+      <meta name="viewport" content="width=device-width">
+      <link rel="shortcut icon" href="favicon.ico">
+      {% load staticfiles %}
+
+      <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/style.css' %}">
+      <link rel="stylesheet" href="{% static 'search/stretchy-navigation/css/reset.css' %}">
+
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+      <link rel="stylesheet" href="{% static 'search/css/styles.css' %}">
+      <link rel="stylesheet" href="{% static 'search/css/fancyInput.css' %}">
+      <link rel="stylesheet" href="{% static 'search/css/bootstrap.css' %}">
+      <link rel="stylesheet" href="{% static 'search/css/spinner.css' %}">
+      <link rel="stylesheet" href="{% static 'search/css/main.css' %}">
+      <link rel="stylesheet" href="{% static 'search/css/fancyTable.css' %}">
+
+      <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script src="{% static 'search/stretchy-navigation/js/main.js' %}"></script>
+      <script src="{% static 'search/stretchy-navigation/js/modernizr.js' %}"></script>
+   </head>
+   <body>
+    
+  
+<ul class="nav nav-tabs">
+  <li><a data-toggle="tab" id="back" href="../"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</a></li>
+  <li class="active"><a data-toggle="tab" href="#cluster1">Cluster 1</a></li>
+  <li><a data-toggle="tab" href="#cluster2">Cluster 2</a></li>
+  <li><a data-toggle="tab" href="#cluster3">Cluster 3</a></li>
+  <li><a data-toggle="tab" href="#cluster4">Cluster 4</a></li>
+  <li><a data-toggle="tab" href="#cluster5">Cluster 5</a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="cluster1" class="tab-pane fade in active embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" src="cluster1"></iframe>
+  </div>
+  <div id="cluster2" class="tab-pane fade in active embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" src="cluster2"></iframe>
+  </div>
+  <div id="cluster3" class="tab-pane fade in active embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" src="cluster3"></iframe>
+  </div>
+  <div id="cluster4" class="tab-pane fade in active embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" src="cluster4"></iframe>
+  </div>
+  <div id="cluster5" class="tab-pane fade in active embed-responsive embed-responsive-16by9">
+	<iframe class="embed-responsive-item" src="cluster5"></iframe>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('#back').click(function(){
+		parent.history.back();
+		return false;
+	});
+});
+</script>
+   </body>
+</html>
