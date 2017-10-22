@@ -94,6 +94,9 @@
       <a class='git' title='TUE' href='https://tue.nl'><img width="150px" src="{% static 'search/images/tuelogo.png' %}"></a>
       <script src='{% static 'search/css/fancyInput.js' %}'></script>
       <script>
+
+         var currentXhr;
+
          $('section :input').val('').fancyInput()[0].focus();
          
          //For the table
@@ -157,7 +160,11 @@
          
 		// AJAX for posting
 		function create_post() {
-		    $.ajax({
+
+      currentXhr && currentXhr.readyState != 4 && currentXhr.abort(); // clear previous request
+
+      console.log('making request')
+		    xhr = $.ajax({
 		        url : "/getContent/", // the endpoint
 		        type : "POST", // http method
 		        data : { query : $('#id_q').val() }, // data sent with the post request
@@ -198,10 +205,12 @@
 			$.each(JSON.parse(data), function(idx, obj) {
 				title = obj.title;
 				year = obj.year;
-        id = obj.year;
+        id = obj.id;
         pagerank = obj.pagerank;
 				addRowToTable(title, year, pagerank, id);
 			});
+
+
 		}
 
 		function addRowToTable(title, year, pagerank, id)

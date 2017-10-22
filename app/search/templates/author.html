@@ -46,90 +46,72 @@
 	</nav>
 
 
-  <div class="pageContainer" style="width: 80%; margin-top: 10%;">
+  <div class="pageContainer">
     <div class="clusterContainer">
       <div class="clusterHeader">
-        Document Meta-data
+        Author-Topic Analysis
       </div>
-      <div class="clusterContent">
 
-        <table class="table">
-          <tbody>
-            <tr>
-              <th>Title:</th>
-              <th>{{ metadata.title }}</th>
-            </tr>
-            <tr>
-              <th>Authors:</th>
-              <th>{% for author in authors %}
-                   <a href="../Author?id={{ author.id }}">{{ author.name }}</a><br>
-                  {% endfor %}</th>
-            </tr>
-            <tr>
-              <th>Pdf-name:</th>
-              <th>{{ metadata.pdf_name }}</th>
-            </tr>
-            <tr>
-              <th>Year:</th>
-              <th>{{ metadata.year }}</th>
-            </tr>
-            <tr>
-              <th>Database-id:</th>
-              <th>{{ metadata.documentId }}</th>
-            </tr>
-          </tbody>
-        </table>
+<!--           "_id" : ObjectId("59ea12ac9ce3c0212a2b098d"),
+    "author_id" : "7",
+    "author_overall_score" : "0.000117835595777",
+    "author_name" : "genea.tagliarini",
+    "trend" : "This author works on variety topics: [2, 3, 5]",
+    "cluster_score" : "0.0138888888889",
+    "workingtimes_with_coauthor" : "[{8: 1.0}]",
+    "topics" : [  -->
 
+      <div class="clusterContent" style="border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Author name:</th>
+                <th>{{ author.name }}</th>
+              </tr>
+              <tr>
+                <th>Author overal score:</th>
+                <th>{{ topicInfo.author_overall_score }}</th>
+              </tr>
+              <tr>
+                <th>Trend:</th>
+                <th>{{ topicInfo.trend }}</th>
+              </tr>
+              <tr>
+                <th>Cluster score:</th>
+                <th>{{ topicInfo.cluster_score }}</th>
+              </tr>
+              <tr>
+                <th>Working time with co-authors:</th>
+                <th>
+                  {% for coauthor in coauthors %}
+                   {{ coauthor.name }} - {{ coauthor.times }}x <br>
+                  {% endfor %}
 
+                  {% if not coauthors %}
+                    No collaborations
+                  {% endif %}
+                </th>
+              </tr>
+            </tbody>
+          </table>
       </div>
     </div>
   </div>
-
 
   <div class="pageContainer">
     <div class="clusterContainer">
       <div class="clusterHeader">
-        Top Topics for this page
+        Author-Topic Analysis
       </div>
-      <div class="clusterContent">
-        {% for topic in topics %}
-             <div style="font-size: {% widthratio topic.value 1 300 %}px; ">{{ topic.topic }}</div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-    <div class="pageContainer">
-    <div class="clusterContainer">
-      <div class="clusterHeader">
-        Keyword analysis
-      </div>
-      <div class="clusterContent">
-        {% for keyword in keywords %}
-             {{ keyword }}, 
-        {% endfor %}
+      <div class="clusterContent" style="border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; background-color: white;">
+        <!-- {% with 'search/images/authortopic/author_id'|add:id|add:'.png' as image_static %} -->
+        <img src="http://www.brouns-design.nl/authortopic/author_id{{ id }}.png">
+        <!-- {% endwith %} -->
       </div>
     </div>
   </div>
 
   
-
-  <div class="pageContainer" >
-    <div class="clusterContainer">
-      <div class="clusterHeader">
-        PDF Preview
-      </div>
-      <div class="clusterContent" style="background-color: #525659">
-          <div>
-<object width="900px" height="600px" data="https://papers.nips.cc/paper/{{ metadata.pdf_name }}" type="application/pdf" >
-alt : <a href="https://papers.nips.cc/paper/{{ metadata.pdf_name }}">test.pdf</a>
-</object>
-</div> 
-
-
-      </div>
-    </div>
-  </div>
 
 
 <script>
