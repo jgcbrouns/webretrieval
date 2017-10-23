@@ -12,6 +12,9 @@ from repository import *
 from authentication import *
 from vsr import *
 import ast
+from youtube import *
+import urllib
+import wikipedia
 
 # Create your views here.
 class HomePageView(TemplateView):
@@ -49,6 +52,20 @@ def author_view(request):
 	
 	return render(request, 'author.html', {'author': authorQuery, 'topicInfo': topicInfo, 'id': authorId, 'coauthors': coauthorsListWithNames})
 
+
+
+def queryAndRetrieveWiki(query):
+	# url = "https://en.wikipedia.org/wiki/" + query
+	# f = urllib.urlopen(url)
+	# result =  f.read()
+	# print >>sys.stderr, result
+	try:
+		result =  wikipedia.summary(query, sentences=3)
+	except:
+		result = ''
+	return result
+
+
 def page_view(request):
 	if request.method == 'GET':
 		documentId = request.GET.get('id')
@@ -61,14 +78,14 @@ def page_view(request):
 		keywords = get_keywords_for_paper(db, documentId)
 		keywords = keywords['keywords']
 
-
 		cursor = get_topics_for_document(db, documentId)
 		for topic in cursor:
 			if topic != 'documentId' and topic != '_id' and topic != 'main topic' and topic != 'second topic' and topic != 'third topic':
 				topicName = topic
 				topicValue = cursor[topic]
+				topicRetrievedDefinition = queryAndRetrieveWiki(topicName)
 
-				topicDict = {'topic': topicName, 'value': topicValue}
+				topicDict = {'topic': topicName, 'value': topicValue, 'definition': topicRetrievedDefinition}
 
 				topicsList.append(topicDict)
 
@@ -76,77 +93,186 @@ def page_view(request):
 		# get_authors_for_paper(db, int(documentId))
 		authors = get_authors_for_paper(db, int(documentId))
 
+		######### 5th COMPONENT #######
+		youtubeIds = youtube_search(str(paper['title']), 3)
+		print >>sys.stderr, youtubeIds
+		##############################
+
 		topicsList.sort(key=lambda item: (item['value']),reverse=True)
 
-		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords},)
+		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords, 'youtubeIds' : youtubeIds},)
 
 def get_papers_from_list(db, ids):
 	cursor = db.pages.find({'documentId': {'$in': ids}});
 	return cursor
 
+def clusters_view(request):
+	return render(request, 'clusters.html')
+
+def cluster1_view(request):
+	return render(request, 'cluster1.html')
+
+def cluster2_view(request):
+	return render(request, 'cluster2.html')
+
+def cluster3_view(request):
+	return render(request, 'cluster3.html')
+
+def cluster4_view(request):
+	return render(request, 'cluster4.html')
+
+def cluster5_view(request):
+	return render(request, 'cluster5.html')
+
+
+def doParseOptionBooleans(value):
+	if value == 'true':
+		value = True
+	else:
+		value = False
+	return value
+
+def queryIsInt(query):
+	try:
+		query = int(query)
+		return True
+	except ValueError:
+		return False
+
+def doIntegerProcedure(query, usepagerank, reindex):
+	db = get_db()
+	response_data = {}
+	
+	if query:
+		try:
+			papers = get_papers_for_intquery(db, query)
+
+			final_list = processPapers(papers, db)
+			jsonOutput = json.dumps(final_list)
+
+			response_data = setFieldExitParameters(response_data, usepagerank)
+
+			response_data['papers'] = jsonOutput
+
+		except ObjectDoesNotExist:
+			null
+
+	else:
+		response_data['papers'] = json.dumps([])
+
+	response_data['result'] = 'data retrieval successful!'
+	response_data['query'] = query
+
+	return response_data
+
+def hasPagerankValue(db, id):
+	try:
+		cursor = get_pagerank(db, id)
+		if cursor:
+			pagerank = cursor['PageRank']
+			return pagerank
+		else:
+			return ''
+	except ObjectDoesNotExist:
+		return 'ERROR'
+
+def appendItemWithPageRank(paper, items_with_pagerank, pagerank):
+	year = paper['year']
+	title = paper['title']
+	id = paper['documentId']
+	jsonInstance = {'year': year,'title': title,'pagerank': pagerank, 'id': id}
+	items_with_pagerank.append(jsonInstance)
+	return items_with_pagerank
+
+#Item without pagerank
+def appendItem(paper, items):
+	year = paper['year']
+	title = paper['title']
+	id = paper['documentId']
+	jsonInstance = {'year': year,'title': title, 'id': id}
+	items.append(jsonInstance)
+	return items
+
+def setFieldExitParameters(response_data, usepagerank):
+	if usepagerank:
+		response_data['usepagerank'] = 'true'
+	else:
+		response_data['usepagerank'] = 'false'
+	return response_data
+
+def processPapers(papers, db):
+	items=[]
+	items_with_pagerank=[]
+
+	for paper in papers:						
+		id = paper['documentId']
+
+		#check if pagerank exist and that there was no error
+		if(hasPagerankValue(db, id) != "ERROR" and hasPagerankValue(db, id) != ""):
+			pagerank = hasPagerankValue(db, id)
+			items_with_pagerank = appendItemWithPageRank(paper, items_with_pagerank, pagerank)
+		else:
+			items = appendItem(paper, items)
+
+	if items_with_pagerank != []:
+		#sort on pagerank
+		items_with_pagerank.sort(key=lambda item: (item['pagerank']),reverse=True)
+		final_list = items_with_pagerank + items
+	else:
+		final_list = items
+
+	return final_list
+
+def doStringProcedure(query, usepagerank, reindex, field):
+	db = get_db()
+	response_data = {}
+	
+	if query:
+		try:
+			#papers = Papers.objects.filter(year=query).only("year", "title", "id")
+
+			ids = final(query, field, 100, reindex)
+			papers = get_papers_from_list(db, ids)
+
+			final_list = processPapers(papers, db)
+			jsonOutput = json.dumps(final_list)
+
+			response_data = setFieldExitParameters(response_data, usepagerank)
+
+			response_data['papers'] = jsonOutput
+
+		except ObjectDoesNotExist:
+			null
+
+	else:
+		response_data['papers'] = json.dumps([])
+
+	response_data['result'] = 'data retrieval successful!'
+	response_data['query'] = query
+
+	return response_data
+
 
 def getContent(request, **kwargs):
     if request.method == 'POST':
-		query = request.POST.get('query')
-		response_data = {}
 
-		# post = Post(text=post_text, author=request.user)
-		# post.save()
-		# Do query
-		db = get_db()
-		print >>sys.stderr, 'hi:'
+    	##########get post parameters#########
+		query = request.POST.get('query')
+		field = request.POST.get('field')
+		reindexString = request.POST.get('reindex')
+		usepagerankString = request.POST.get('usepagerank')
+		######################################
+
+		########Do some boolean parsing#######
+		reindex = doParseOptionBooleans(reindexString)
+		usepagerank = doParseOptionBooleans(usepagerankString)
+		######################################
 
 		if query:
-			try:
-				query = str(query)
-				print >>sys.stderr, 'asdf:'
-			except ValueError:
-				query = None
-				papers = None
-
-				#return empty data
-				response_data['papers'] = json.dumps([])
-			
-			if query:
-				try:
-					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
-
-					ids = final(query, 100)
-					papers = get_papers_from_list(db, ids)
-
-					items=[]
-					items_with_pagerank=[]
-
-					for paper in papers:						
-						year = paper['year']
-						title = paper['title']
-						id = paper['documentId']
-						# authors = get_authors_for_paper(db, int(id))
-						try:
-							cursor = get_pagerank(db, id)
-							if cursor:
-								pagerank = cursor['PageRank']
-								jsonInstance = {'year': year,'title': title,'pagerank': pagerank, 'id': id}
-								items_with_pagerank.append(jsonInstance)
-							else:
-								jsonInstance = {'year': year,'title': title, 'id': id}
-								items.append(jsonInstance)
-						except ObjectDoesNotExist:
-							null
-
-					#sort on pagerank
-					#items.sort(key=lambda item: (item['points'], item['time']))
-					items_with_pagerank.sort(key=lambda item: (item['pagerank']),reverse=True)
-
-					final_list = items_with_pagerank + items
-					jsonOutput = json.dumps(final_list)
-
-					response_data['papers'] = jsonOutput
-				except ObjectDoesNotExist:
-					null
-
-		response_data['result'] = 'data retrieval successful!'
-		response_data['query'] = query
+			if(queryIsInt(query)):
+				response_data = doIntegerProcedure(query, usepagerank, reindex)
+			else:
+				response_data = doStringProcedure(query, usepagerank, reindex, field)
 
 		return HttpResponse(
 			json.dumps(response_data),
@@ -157,76 +283,3 @@ def getContent(request, **kwargs):
 			json.dumps({"nothing to see": "this isn't happening"}),
 			content_type="application/json"
         )
-
-# def getContent(request, **kwargs):
-#     if request.method == 'POST':
-# 		query = request.POST.get('query')
-# 		response_data = {}
-
-# 		# post = Post(text=post_text, author=request.user)
-# 		# post.save()
-# 		# Do query
-# 		db = get_db()
-# 		if query:
-# 			try:
-# 				query = int(query)
-# 			except ValueError:
-# 				query = None
-# 				papers = None
-
-# 				#return empty data
-# 				response_data['papers'] = json.dumps([])
-			
-# 			if query:
-# 				try:
-# 					# papers = Papers.objects.filter(year=query).only("year", "title", "id")
-
-# 					ids = final(query, 10)
-# 					papers = get_papers_from_list(db, ids)
-
-# 					# for id in ids:
-# 					# 	paper = get_paper(db, id)
-
-# 					items=[]
-# 					items_with_pagerank=[]
-
-    
-# 					for paper in papers:
-# 						year = paper.year
-# 						title = paper.title
-# 						id = paper.id
-# 						try:
-# 							cursor = get_pagerank(db, id)
-# 							if cursor:
-# 								pagerank = cursor['PageRank']
-# 								jsonInstance = {'year': year,'title': title,'pagerank': pagerank, 'id': id}
-# 								items_with_pagerank.append(jsonInstance)
-# 							else:
-# 								jsonInstance = {'year': year,'title': title, 'id': id}
-# 								items.append(jsonInstance)
-# 						except ObjectDoesNotExist:
-# 							null
-
-# 					#sort on pagerank
-# 					#items.sort(key=lambda item: (item['points'], item['time']))
-# 					items_with_pagerank.sort(key=lambda item: (item['pagerank']),reverse=True)
-
-# 					final_list = items_with_pagerank + items
-# 					jsonOutput = json.dumps(final_list)
-
-# 					response_data['papers'] = jsonOutput
-# 				except ObjectDoesNotExist:
-# 					null
-
-# 		response_data['result'] = 'data retrieval successful!'
-# 		response_data['query'] = query
-
-# 		return HttpResponse(
-# 			json.dumps(response_data),
-# 			content_type="application/json"
-#         )
-#     else:
-#         return HttpResponse(
-# 			json.dumps({"nothing to see": "this isn't happening"}),
-# 			content_type="application/json"
-#         )

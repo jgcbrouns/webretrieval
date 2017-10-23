@@ -97,6 +97,9 @@ def get_author(db, author_id):
     author = db.authors.find_one({'author_id': author_id })
     return author   
 
+def get_papers_for_intquery(db, year):
+    cursor = db.pages.find({'year': int(year) })
+    return cursor
 
 def get_keywords_for_paper(db, paper_id):
     author = db.Paperid_keywords_V1.find_one({'paper_id': paper_id })
