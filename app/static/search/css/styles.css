@@ -27,7 +27,7 @@ header{ position:absolute; z-index:999; top:0; left:0; width:100%; padding:10px 
 			menu.radio label:hover span{ opacity:1; }
 			menu.radio input{ display:none; }
 
-	a.git, a.by{ position:absolute; bottom:2px; right:5px; -webkit-transform:scale(0.8); -webkit-transform-origin:100% 100%; transform:scale(0.8); transform-origin:100% 100%; opacity:0.3; -webkit-transition:0.3s cubic-bezier(0.055, 0.6, 0.2, 1); transition:0.3s cubic-bezier(0.055, 0.6, 0.2, 1); }
+	a.git, a.by{ position:fixed; bottom:2px; right:5px; -webkit-transform:scale(0.8); -webkit-transform-origin:100% 100%; transform:scale(0.8); transform-origin:100% 100%; opacity:0.3; -webkit-transition:0.3s cubic-bezier(0.055, 0.6, 0.2, 1); transition:0.3s cubic-bezier(0.055, 0.6, 0.2, 1); }
 	a.git:hover, a.by:hover{ -webkit-transform:scale(1); transform:scale(1); opacity:1; }
 		a.git img{  }
 
