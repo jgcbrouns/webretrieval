@@ -102,8 +102,11 @@ def page_view(request):
 
 		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords, 'youtubeIds' : youtubeIds},)
 
-def get_papers_from_list(db, ids):
-	cursor = db.pages.find({'documentId': {'$in': ids}});
+def get_papers_from_list(db, ids, year):
+	if year != 0:
+		cursor = db.pages.find({'documentId': {'$in': ids}, 'year': year});
+	else:
+		cursor = db.pages.find({'documentId': {'$in': ids}});
 	return cursor
 
 def clusters_view(request):
@@ -146,6 +149,8 @@ def doIntegerProcedure(query, usepagerank, reindex):
 	if query:
 		try:
 			papers = get_papers_for_intquery(db, query)
+			if papers:
+				response_data['status'] = 'done'
 
 			final_list = processPapers(papers, db)
 			jsonOutput = json.dumps(final_list)
@@ -223,7 +228,7 @@ def processPapers(papers, db):
 
 	return final_list
 
-def doStringProcedure(query, usepagerank, reindex, field):
+def doStringProcedure(query, usepagerank, reindex, field, pagerank_threshold, year):
 	db = get_db()
 	response_data = {}
 	
@@ -231,8 +236,8 @@ def doStringProcedure(query, usepagerank, reindex, field):
 		try:
 			#papers = Papers.objects.filter(year=query).only("year", "title", "id")
 
-			ids = final(query, field, 100, reindex)
-			papers = get_papers_from_list(db, ids)
+			ids = final(query, field, 100, reindex, pagerank_threshold)
+			papers = get_papers_from_list(db, ids, year)
 
 			final_list = processPapers(papers, db)
 			jsonOutput = json.dumps(final_list)
@@ -247,8 +252,8 @@ def doStringProcedure(query, usepagerank, reindex, field):
 	else:
 		response_data['papers'] = json.dumps([])
 
-	response_data['result'] = 'data retrieval successful!'
 	response_data['query'] = query
+	response_data['status'] = 'done'
 
 	return response_data
 
@@ -261,25 +266,29 @@ def getContent(request, **kwargs):
 		field = request.POST.get('field')
 		reindexString = request.POST.get('reindex')
 		usepagerankString = request.POST.get('usepagerank')
+		pagerank_threshold = float(request.POST.get('threshold'))
+		year = int(request.POST.get('year'))
+
 		######################################
 
 		########Do some boolean parsing#######
 		reindex = doParseOptionBooleans(reindexString)
-		usepagerank = doParseOptionBooleans(usepagerankString)
+		# usepagerank = doParseOptionBooleans(usepagerankString)
+		usepagerank = True;
 		######################################
 
 		if query:
 			if(queryIsInt(query)):
 				response_data = doIntegerProcedure(query, usepagerank, reindex)
 			else:
-				response_data = doStringProcedure(query, usepagerank, reindex, field)
+				response_data = doStringProcedure(query, usepagerank, reindex, field, pagerank_threshold, year)
 
 		return HttpResponse(
 			json.dumps(response_data),
 			content_type="application/json"
         )
-    else:
-        return HttpResponse(
-			json.dumps({"nothing to see": "this isn't happening"}),
-			content_type="application/json"
-        )
+   #  else:
+   #      return HttpResponse(
+			# json.dumps({"nothing to see": "this isn't happening"}),
+			# content_type="application/json"
+   #      )
