@@ -33,7 +33,7 @@ def normalizeTf(tf, did):
     for key in tf[did].keys():
         tf[did][key] /= len(tf[did]) * 1.0
 
-def cosine_similarity(tfIdf, qTfIdf, DF, COUNT):
+def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
     dot_product = 0
     query_sc = 0;
     document_sc = 0;
@@ -56,6 +56,10 @@ def cosine_similarity(tfIdf, qTfIdf, DF, COUNT):
         return 0
 
     cosine_similarity = dot_product / ( math.sqrt(query_sc) * math.sqrt(document_sc) )
+    
+    if cosine_similarity < threshold:
+        return 0
+
     return cosine_similarity
 
 def topN(dic, n):
@@ -86,7 +90,7 @@ class DBHelper:
         self.db[self.collection_df].insert_many(list_df)
 
     def get_tf(self, documentId):
-        return self.db[self.collection].find_one({'documentId': documentId});
+        return self.db[self.collection].find_one({'documentId': documentId})
 
     def get_all_tf(self):
         tf = {}
@@ -101,10 +105,10 @@ class DBHelper:
         return df
 
     def get_document(self, documentId):
-        return self.db.pages.find_one({'documentId': documentId});
+        return self.db.pages.find_one({'documentId': documentId})
 
     def get_documents(self):
-        return list(self.db.pages.find({}, {"documentId" : 1, self.anal_field : 1, "title" : 1, "_id" : 0}).limit(self.LIMIT));
+        return list(self.db.pages.find({}, {"documentId" : 1, self.anal_field : 1, "title" : 1, "_id" : 0}).limit(self.LIMIT))
 
     def clean_db(self):
         self.db[self.collection].remove({})
@@ -113,7 +117,7 @@ class DBHelper:
     def printJson(obj):
         print json.dumps(obj, indent=4, sort_keys=True)
 
-def final(query, based_on, top_n, reindex):
+def final(query, based_on, top_n, reindex, threshold):
 
     if based_on == "title":
         ANAL_FIELD = "title"
@@ -175,7 +179,9 @@ def final(query, based_on, top_n, reindex):
 
     cos_sim = {}
     for document in tf:
-        cos_sim[document] = cosine_similarity(tfIdf[document], qTfIdf, DF, COUNT)
+        cos_sim[document] = cosine_similarity(tfIdf[document], qTfIdf, DF, COUNT, threshold)
+
+    cos_sim = { k:v for k, v in cos_sim.items() if v }
 
     top_documents  = topN(cos_sim, top_n)
 
@@ -185,5 +191,5 @@ def final(query, based_on, top_n, reindex):
     return top_documents
 
 if __name__ == "__main__":
-    print final("neural network", "title", 5, False)
+    print final("neural network", "title", 10, False, 0.7)
     
