@@ -59,6 +59,13 @@
               <label data-on="ON" data-off="OFF"></label>
               </span>
            </div>
+           <div>
+              <h4>References PageRank:</h4>
+              <span class="checkbox">
+              <input type="checkbox" id="referencePageRankField">
+              <label data-on="ON" data-off="OFF"></label>
+              </span>
+           </div>
         </div>
      </div>
       <!--  </form> -->
@@ -158,20 +165,36 @@
          }
          
          $("#id_q").on('input', function() {
-         var value=$.trim($("#id_q").val());
-         if(value.length>0)
-         {
-         loadingOn();
-              event.preventDefault();
-              create_post();
-          }
-          //field is empty so dont query and show no result
-          else
-          {
-            showNoResultMessage();
-          }
-         
+            prepareRequest()
          });
+
+         $("#slct").on('change', function() {
+            prepareRequest()
+         });         
+
+         $("#referencePageRankField").on('change', function() {
+            prepareRequest()
+         });
+
+         $("#reindexField").on('change', function() {
+            prepareRequest()
+         });
+
+         function prepareRequest()
+         {
+           var value=$.trim($("#id_q").val());
+           if(value.length>0)
+           {
+                loadingOn();
+                event.preventDefault();
+                create_post();
+            }
+            //field is empty so dont query and show no result
+            else
+            {
+              showNoResultMessage();
+            }
+         }
          
          // AJAX for posting
          function create_post() {
@@ -184,10 +207,12 @@
          xhr = $.ajax({
           url : "/getContent/", // the endpoint
           type : "POST", // http method
-          data : { query : $('#id_q').val(), field : settings['field'], reindex : settings['reindex'] }, // data sent with the post request
+          data : { query : $('#id_q').val(), field : settings['field'], reindex : settings['reindex'], 'usepagerank': settings['referencePageRankField'] }, // data sent with the post request
          
           // handle a successful response
           success : function(json) {
+
+            var usepagerank = json.usepagerank;
          
             //console.log(json.papers);
               if(json.papers == "[]")
@@ -234,10 +259,12 @@
          {
             var field = $('#slct option:selected').val();
             var reindex = $("#reindexField").is(":checked");
+            var referencePageRankField = $("#referencePageRankField").is(":checked");
 
             var settings = [];
             settings['field'] = field;
             settings['reindex'] = reindex;
+            settings['referencePageRankField'] = referencePageRankField;
 
             return settings;
          }
@@ -253,7 +280,7 @@
          $('#resultTable > tbody:last-child').append(
                '<tr>'// need to change closing tag to an opening `<tr>` tag.
                 +'<td width="65%">' 
-                      + '<a href="' + 'paper?id=' + id + '">'+ title + '</a>' 
+                      + '<a href="' + 'paper?id=' + id + '" target="_blank">'+ title + '</a>' 
                     + '</td>'
                 +'<td>'+ year +'</td>'
                     +'<td>'+ pagerank +'</td>'

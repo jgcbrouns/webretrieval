@@ -139,3 +139,27 @@ section {
     border-radius: 0px;
     text-decoration: none;
 }
+
+.btn-info {
+    color: #fff;
+    background-color: #42a88b;
+    border-color: #55b79c;
+    margin-left: 10px;
+}
+.btn-info:hover {
+    color: #fff;
+    background-color: #6fd6b9;
+    border-color: #6fd6b9;
+}
+
+.modal-content {
+    background-color: #55B89D;
+    border-radius: 0px;
+    width: 600px;
+}
+
+.modal-title
+{
+	color: white;
+	font-family: 'Julius Sans One', sans-serif;
+}
