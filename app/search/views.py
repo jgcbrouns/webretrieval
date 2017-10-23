@@ -223,7 +223,7 @@ def processPapers(papers, db):
 
 	return final_list
 
-def doStringProcedure(query, usepagerank, reindex, field):
+def doStringProcedure(query, usepagerank, reindex, field, pagerank_threshold, year):
 	db = get_db()
 	response_data = {}
 	
@@ -231,7 +231,7 @@ def doStringProcedure(query, usepagerank, reindex, field):
 		try:
 			#papers = Papers.objects.filter(year=query).only("year", "title", "id")
 
-			ids = final(query, field, 100, reindex)
+			ids = final(query, field, 100, reindex, pagerank_threshold, year)
 			papers = get_papers_from_list(db, ids)
 
 			final_list = processPapers(papers, db)
@@ -261,6 +261,8 @@ def getContent(request, **kwargs):
 		field = request.POST.get('field')
 		reindexString = request.POST.get('reindex')
 		usepagerankString = request.POST.get('usepagerank')
+		year = request.POST.get('year')
+		pagerank_threshold = request.POST.get('threshold')
 		######################################
 
 		########Do some boolean parsing#######
@@ -272,7 +274,7 @@ def getContent(request, **kwargs):
 			if(queryIsInt(query)):
 				response_data = doIntegerProcedure(query, usepagerank, reindex)
 			else:
-				response_data = doStringProcedure(query, usepagerank, reindex, field)
+				response_data = doStringProcedure(query, usepagerank, reindex, field, pagerank_threshold, year)
 
 		return HttpResponse(
 			json.dumps(response_data),
