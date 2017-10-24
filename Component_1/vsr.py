@@ -1,4 +1,4 @@
-import re, operator, math, json, sys
+import re, operator, math
 from nltk.corpus import stopwords
 from authentication import *
 
@@ -26,8 +26,8 @@ def sort(array, desc = True):
 
 def idf(df, key, N):
     if key in df:
-        return 1 + math.log10(N/df[key])
-    return 1 + math.log10(N)
+        return math.log10(N/df[key])
+    return math.log10(N)
 
 def normalizeTf(tf, did):
     for key in tf[did].keys():
@@ -68,7 +68,7 @@ def topN(dic, n):
 
 class DBHelper:
 
-    LIMIT = 2000
+    LIMIT = 7000
     db = get_db()
 
     def __init__(self, anal_field, db_field):
@@ -114,9 +114,6 @@ class DBHelper:
         self.db[self.collection].remove({})
         self.db[self.collection_df].remove({})
 
-    def printJson(obj):
-        print json.dumps(obj, indent=4, sort_keys=True)
-
 def final(query, based_on, top_n, reindex, threshold):
 
     if based_on == "title":
@@ -145,7 +142,6 @@ def final(query, based_on, top_n, reindex, threshold):
                 else:
                     df[token] = 1
         DBH.add_bulk_df(df)
-        
 
     tf = DBH.get_all_tf()
     DF = DBH.get_df()
@@ -191,5 +187,5 @@ def final(query, based_on, top_n, reindex, threshold):
     return top_documents
 
 if __name__ == "__main__":
-    print final("neural network", "title", 10, False, 0.7)
+    print final("neural network", "paper_text", 10, True, 0.2)
     
