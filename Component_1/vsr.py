@@ -3,6 +3,10 @@ from nltk.corpus import stopwords
 from authentication import *
 
 
+### VARIABLES ###
+
+LAMBDA = 0.0001
+
 def prepare(text):
     stop = set(stopwords.words('english'))
     text = re.sub(r'[^\w]', ' ', text)
@@ -24,6 +28,9 @@ def calculate(keywords, limit):
 def sort(array, desc = True):
     return sorted(array.items(), key=operator.itemgetter(1), reverse=desc)
 
+def tf_norm(value):
+    return 1 + math.log10(value)
+
 def idf(df, key, N):
     if key in df:
         return math.log10(N/df[key])
@@ -43,13 +50,13 @@ def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
             dot_product += qTfIdf[qToken] * tfIdf[qToken]
             document_sc += math.pow(tfIdf[qToken], 2)
         else:
-            dot_product += qTfIdf[qToken] * 0.0001 * idf(DF, qToken, COUNT)
-            document_sc += math.pow(0.0001 * idf(DF, qToken, COUNT), 2)
+            dot_product += qTfIdf[qToken] * LAMBDA * idf(DF, qToken, COUNT)
+            document_sc += math.pow(LAMBDA * idf(DF, qToken, COUNT), 2)
         query_sc += math.pow(qTfIdf[qToken], 2)
 
     for token in tfIdf:
         if not token in qTfIdf:
-            dot_product += tfIdf[token] * 0.0001 * idf(DF, token, COUNT)
+            dot_product += tfIdf[token] * LAMBDA * idf(DF, token, COUNT)
             document_sc += math.pow(tfIdf[token], 2)
 
     if not query_sc or not document_sc:
@@ -61,6 +68,35 @@ def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
         return 0
 
     return cosine_similarity
+
+# def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
+#     dot_product = 0
+#     query_sc = 0;
+#     document_sc = 0;
+
+#     for qToken in qTfIdf:
+#         if qToken in tfIdf:
+#             dot_product += qTfIdf[qToken] * tfIdf[qToken]
+#             document_sc += math.pow(tfIdf[qToken], 2)
+#         else:
+#             dot_product += qTfIdf[qToken] * 0.0001 * idf(DF, qToken, COUNT)
+#             document_sc += math.pow(0.0001 * idf(DF, qToken, COUNT), 2)
+#         query_sc += math.pow(qTfIdf[qToken], 2)
+
+#     for token in tfIdf:
+#         if not token in qTfIdf:
+#             dot_product += tfIdf[token] * 0.0001 * idf(DF, token, COUNT)
+#             document_sc += math.pow(tfIdf[token], 2)
+
+#     if not query_sc or not document_sc:
+#         return 0
+
+#     cosine_similarity = dot_product / ( math.sqrt(query_sc) * math.sqrt(document_sc) )
+    
+#     if cosine_similarity < threshold:
+#         return 0
+
+#     return cosine_similarity
 
 def topN(dic, n):
     top = sorted(dic, key=dic.get, reverse=True)
@@ -147,6 +183,10 @@ def final(query, based_on, top_n, reindex, threshold):
     DF = DBH.get_df()
     COUNT = len(tf)
 
+    for doc in tf.keys():
+        for key in tf[doc]:
+            tf[doc][key] = tf_norm((tf[doc][key]))
+
     for key in tf.keys():
         normalizeTf(tf, key)
 
@@ -167,7 +207,7 @@ def final(query, based_on, top_n, reindex, threshold):
             qDf[token] = 0
 
     for key in qTf.keys():
-        qTf[key] /= len(qTf)*1.0
+        qTf[key] = tf_norm(qTf[key])
 
     qTfIdf = {}
     for token in qTf:
@@ -187,5 +227,5 @@ def final(query, based_on, top_n, reindex, threshold):
     return top_documents
 
 if __name__ == "__main__":
-    print final("neural network", "paper_text", 10, True, 0.2)
+    print final("neural network", "paper_text", 10, False, 0)
     
