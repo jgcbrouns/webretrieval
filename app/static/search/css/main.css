@@ -17,7 +17,7 @@ margin-top:	30px;
 .tableContainer
 {
 width: 90%;
-margin-left: 20%;
+margin-left: 20 !important%;
 margin-left: 5%;
 }
 
@@ -162,4 +162,16 @@ section {
 {
 	color: white;
 	font-family: 'Julius Sans One', sans-serif;
+}
+
+a.git {
+    bottom: 8px;
+    right: 8px;
+}
+
+.logo
+{
+	position: absolute;
+	top: 15px;
+	left: 15px;
 }

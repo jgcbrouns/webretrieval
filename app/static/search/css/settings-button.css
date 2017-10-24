@@ -3,8 +3,8 @@
 .settingsButton
 {
 	position: fixed;
-	left: 0px;
-	bottom: 0px;
+	left: 5px;
+	bottom: 5px;
 	height: 70px;
 	width: 70px;
 	color: white;
@@ -18,3 +18,4 @@
 	opacity: 1;
 	cursor: pointer;
 }
+
