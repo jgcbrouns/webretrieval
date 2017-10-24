@@ -32,9 +32,11 @@
       <script src="{% static 'search/stretchy-navigation/js/modernizr.js' %}"></script>
    </head>
    <body>
-      <div class="settingsButton">
-         <i class="fa fa-cog fa-5x" aria-hidden="true" data-toggle="collapse" data-target="#demo"></i>
-      </div>
+
+    <div class="logo">
+      <img width="180px" src="{% static 'search/images/logo.png' %}">
+    </div>
+
       <!--  <form method="get" action="/"> -->
       <div class="inputContainer">
          <section class='input'>
@@ -156,6 +158,10 @@
                </table>
             </div>
          </div>
+      </div>
+
+            <div class="settingsButton">
+         <i class="fa fa-cog fa-5x" aria-hidden="true" data-toggle="collapse" data-target="#demo"></i>
       </div>
       <!--  -->
       <a class='git' title='TUE' href='https://tue.nl'><img width="150px" src="{% static 'search/images/tuelogo.png' %}"></a>
