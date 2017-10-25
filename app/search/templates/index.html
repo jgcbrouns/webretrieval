@@ -212,29 +212,35 @@
            hideNoResultBlock();
        }
 
-       $("#id_q").on('input', function() {
-           prepareRequest()
-       });
+       // $("#id_q").on('input', function() {
+       //     prepareRequest()
+       // });
 
-       $("#slct").on('change', function() {
-           prepareRequest()
-       });
+       // $("#slct").on('change', function() {
+       //     prepareRequest()
+       // });
 
-       $("#thresholdvalueField").on('change', function() {
-           prepareRequest()
-       });
+       // $("#thresholdvalueField").on('change', function() {
+       //     prepareRequest()
+       // });
 
-       $("#slct_year").on('change', function() {
-           prepareRequest()
-       });
+       // $("#slct_year").on('change', function() {
+       //     prepareRequest()
+       // });
 
        // $("#referencePageRankField").on('change', function() {
        //    prepareRequest()
        // });
 
-       $("#reindexField").on('change', function() {
-           prepareRequest()
-       });
+       // $("#reindexField").on('change', function() {
+       //     prepareRequest()
+       // });
+
+        $('.input').keypress(function (e) {
+          if (e.which == 13) {
+            prepareRequest();
+          }
+        });
 
        function prepareRequest() {
            var value = $.trim($("#id_q").val());

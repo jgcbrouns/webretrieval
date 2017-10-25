@@ -110,10 +110,11 @@ label {
 	box-shadow: 0 1px 0 rgba(255,255,255,.15), 0 2px 4px rgba(0,0,0,.2) inset, 0 0 12px rgba(255,255,255,.1);
 }
 
-.container
-{
-	display: inline-block;
-	margin-left: 35%;
+.container {
+    /* display: inline-block; */
+    position: relative;
+    left: 49%;
+    margin-left: -250px;
 }
 
 section {

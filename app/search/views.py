@@ -235,8 +235,8 @@ def doStringProcedure(query, usepagerank, reindex, field, pagerank_threshold, ye
 	if query:
 		try:
 			#papers = Papers.objects.filter(year=query).only("year", "title", "id")
-
-			ids = final(query, field, 100, reindex, pagerank_threshold)
+			print query
+			ids = final(query, field, 100, False, pagerank_threshold)
 			papers = get_papers_from_list(db, ids, year)
 
 			final_list = processPapers(papers, db)
