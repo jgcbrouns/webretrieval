@@ -24,6 +24,9 @@ class HomePageView(TemplateView):
 def topics_view(request):
 	return render(request, 'vis.html')
 
+def authorclustering(request):
+	return render(request, 'authorclustering_markup.html')
+
 
 def author_view(request):
 	if request.method == 'GET':

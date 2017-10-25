@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^clusters/cluster2$', views.cluster2_view),
     url(r'^clusters/cluster3$', views.cluster3_view),
     url(r'^clusters/cluster4$', views.cluster4_view),
-    url(r'^clusters/cluster5$', views.cluster5_view)
+    url(r'^clusters/cluster5$', views.cluster5_view),
+    url(r'^clusters/AuthorClustering$', views.authorclustering)
 ]
