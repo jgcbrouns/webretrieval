@@ -176,3 +176,7 @@ a.git {
 	top: 15px;
 	left: 15px;
 }
+
+div#noResultBlock {
+    padding-top: 100px;
+}
