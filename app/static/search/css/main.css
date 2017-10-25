@@ -180,6 +180,7 @@ a.git {
 	left: 15px;
 }
 
+
 .referenceTitle
 {
 	color: white;
@@ -194,3 +195,8 @@ a.git {
     vertical-align: top;
     border-top: 1px solid #636363;
 }
+
+div#noResultBlock {
+    padding-top: 100px;
+}
+
