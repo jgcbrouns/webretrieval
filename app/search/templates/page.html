@@ -124,7 +124,7 @@
             <tr>
               <th><div class="referenceTitle">{{ reference.title }}</div>
                 <bold>Authors:</bold>
-                {% for author in authors %}
+                {% for author in reference.authors %}
                   <a href="../Author?id={{ author.id }}">{{ author.name }}</a>,
                 {% endfor %}
                 <br>
