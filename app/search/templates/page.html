@@ -111,6 +111,40 @@
     </div>
   </div>
 
+{% if references|length > 0 %}
+  <div class="pageContainer" style="width: 80%; margin-top: 4%;">
+    <div class="clusterContainer">
+      <div class="clusterHeader">
+        Referenced by:
+      </div>
+      <div class="clusterContent" style="text-align: center;">
+        <table class="table">
+          <tbody>
+              {% for reference in references %}
+            <tr>
+              <th><div class="referenceTitle">{{ reference.title }}</div>
+                <bold>Authors:</bold>
+                {% for author in authors %}
+                  <a href="../Author?id={{ author.id }}">{{ author.name }}</a>,
+                {% endfor %}
+                <br>
+                Year of publication: {{ reference.year }} <br>
+              </th>
+            </tr>
+            <tr>
+              {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+{% endif %}
+
+
+
+
 
 {% for topic in topics %}
 <!-- Modal -->

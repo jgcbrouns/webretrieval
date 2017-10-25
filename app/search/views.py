@@ -75,6 +75,11 @@ def page_view(request):
 
 		db = get_db()
 
+		try:
+			references = get_references_for_paper(db, documentId)
+		except Exception:
+			references = []
+
 		keywords = get_keywords_for_paper(db, documentId)
 		keywords = keywords['keywords']
 
@@ -100,7 +105,7 @@ def page_view(request):
 
 		topicsList.sort(key=lambda item: (item['value']),reverse=True)
 
-		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords, 'youtubeIds' : youtubeIds},)
+		return render(request, 'page.html', {'topics': topicsList, 'metadata': paper, 'authors': authors, 'keywords' : keywords, 'youtubeIds' : youtubeIds, 'references': references},)
 
 def get_papers_from_list(db, ids, year):
 	if year != 0:

@@ -1,4 +1,4 @@
-import sys
+import sys,ast
 '''
     adds an amount to the database for a specific keyword and documentId
     @param db, keyword, documentId, amount
@@ -120,5 +120,26 @@ def get_authors_for_paper(db, documentId):
         jsonInstance = {'name': authorName,'id': authorId}
         authorsList.append(jsonInstance)
     return authorsList
+
+def get_references_for_paper(db, documentId):
+    cursor = db.title_references.find_one({'documentId': int(documentId) })
+    referencesList = []
+    referencesFound = cursor['references_found']
+    print >>sys.stderr, 'References:' 
+    for reference in referencesFound:
+        references = reference['documents']
+        references = ast.literal_eval(references)
+
+        for documentId in references:
+            paper = get_paper(db, documentId)
+            title = paper['title']
+            year = paper['year']
+            authorsList = get_authors_for_paper(db, documentId)
+            
+            jsonInstance = {'title': title,'documentId': documentId, 'year': year, 'authors': authorsList}
+            referencesList.append(jsonInstance)
+            print >>sys.stderr, referencesList
+
+    return referencesList   
         
    
