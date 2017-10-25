@@ -69,35 +69,6 @@ def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
 
     return cosine_similarity
 
-# def cosine_similarity(tfIdf, qTfIdf, DF, COUNT, threshold):
-#     dot_product = 0
-#     query_sc = 0;
-#     document_sc = 0;
-
-#     for qToken in qTfIdf:
-#         if qToken in tfIdf:
-#             dot_product += qTfIdf[qToken] * tfIdf[qToken]
-#             document_sc += math.pow(tfIdf[qToken], 2)
-#         else:
-#             dot_product += qTfIdf[qToken] * 0.0001 * idf(DF, qToken, COUNT)
-#             document_sc += math.pow(0.0001 * idf(DF, qToken, COUNT), 2)
-#         query_sc += math.pow(qTfIdf[qToken], 2)
-
-#     for token in tfIdf:
-#         if not token in qTfIdf:
-#             dot_product += tfIdf[token] * 0.0001 * idf(DF, token, COUNT)
-#             document_sc += math.pow(tfIdf[token], 2)
-
-#     if not query_sc or not document_sc:
-#         return 0
-
-#     cosine_similarity = dot_product / ( math.sqrt(query_sc) * math.sqrt(document_sc) )
-    
-#     if cosine_similarity < threshold:
-#         return 0
-
-#     return cosine_similarity
-
 def topN(dic, n):
     top = sorted(dic, key=dic.get, reverse=True)
     return top[:n]
@@ -227,5 +198,5 @@ def final(query, based_on, top_n, reindex, threshold):
     return top_documents
 
 if __name__ == "__main__":
-    print final("neural network", "paper_text", 10, False, 0)
+    print final("deep learning", "title", 10, False, 0)
     
